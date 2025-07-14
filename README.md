@@ -112,7 +112,20 @@ This project uses the amazing [Tesseract OCR engine](https://github.com/tesserac
 ---
 
 ## 🏷️ Keywords | کلیدواژه‌ها
-Persian OCR, Farsi OCR, Image to Text, PDF OCR, Tesseract, PySide6, Qt for Python, Persian Text Recognition, فارسی, تشخیص متن فارسی, OCR فارسی, تبدیل عکس به متن, تبدیل PDF به متن
+
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">Persian OCR</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">Farsi OCR</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">Image to Text</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">PDF OCR</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">Tesseract</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">PySide6</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">Qt for Python</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">Persian Text Recognition</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">فارسی</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">تشخیص متن فارسی</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">OCR فارسی</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">تبدیل عکس به متن</span>
+<span style="display:inline-block;background:#f3f3f3;border-radius:6px;padding:3px 10px;margin:2px 2px;font-size:90%;">تبدیل PDF به متن</span>
 
 ---
 
