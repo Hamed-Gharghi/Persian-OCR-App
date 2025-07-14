@@ -1,4 +1,3 @@
-
 # Persian OCR App 🇮🇷🖼️🔍📝
 
 [![GitHub stars](https://img.shields.io/github/stars/Hamed-Gharghi/Persian-OCR-App?style=social)](https://github.com/Hamed-Gharghi/Persian-OCR-App/stargazers)
@@ -15,6 +14,14 @@
 > **Persian OCR App** — Convert Persian (Farsi) images and PDFs to editable text using Tesseract and PySide6. Fast, accurate, and easy-to-use desktop OCR for Persian documents.
 > 
 > **برنامه OCR فارسی** — تبدیل عکس و PDF فارسی به متن قابل ویرایش با استفاده از Tesseract و PySide6. سریع، دقیق و آسان برای اسناد فارسی.
+
+---
+
+## 🪟 Download for Windows
+
+**No installation or Python required!**
+- Download the latest ready-to-use Windows executable (`PersianOCR.exe`) from the [Releases page](https://github.com/Hamed-Gharghi/Persian-OCR-App/releases).
+- Just download, double-click, and start using Persian OCR on Windows.
 
 ---
 
