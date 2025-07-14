@@ -16,14 +16,6 @@
 ## 📑 Navigation | ناوبری
 - [🇬🇧 English](#english)
 - [🇮🇷 فارسی](#persian)
-- [🔑 Key Features](#-key-features--highlights--نکات-کلیدی-و-ویژگیها)
-- [🚀 Quick Start](#-quick-start)
-- [🖼️ Screenshots](#-screenshots)
-- [❓ What is Persian OCR?](#-what-is-persian-ocr--ocr-فارسی-چیست)
-- [📄 License](#-license)
-- [🙏 Thanks](#-thanks--تشکر)
-- [🏷️ Keywords](#-keywords--کلیدواژهها)
-- [📬 Contact](#-contact)
 
 ---
 
@@ -60,9 +52,9 @@
 ---
 
 ## 🖼️ Screenshots | اسکرین‌شات
-> _Add your own screenshots here for best results!_
-
-![App Screenshot Placeholder](https://via.placeholder.com/800x400?text=Persian+OCR+App+Screenshot)
+<p align="center">
+  <img src="https://github.com/Hamed-Gharghi/Persian-OCR-App/blob/main/assets/image.png?raw=true" alt="Persian OCR App Screenshot" />
+</p>
 
 ---
 
