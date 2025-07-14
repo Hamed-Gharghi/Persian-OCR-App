@@ -1,6 +1,10 @@
 
 # Persian OCR App 🇮🇷🖼️🔍📝
 
+[![GitHub stars](https://img.shields.io/github/stars/Hamed-Gharghi/Persian-OCR-App?style=social)](https://github.com/Hamed-Gharghi/Persian-OCR-App/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/Hamed-Gharghi/Persian-OCR-App)](https://github.com/Hamed-Gharghi/Persian-OCR-App/issues)
+[![GitHub forks](https://img.shields.io/github/forks/Hamed-Gharghi/Persian-OCR-App?style=social)](https://github.com/Hamed-Gharghi/Persian-OCR-App/network/members)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
 ![PySide6](https://img.shields.io/badge/PySide6-Qt%20for%20Python-green?logo=qt)
@@ -97,6 +101,26 @@ Persian OCR (Optical Character Recognition) is the technology to convert scanned
 ## 📝 نکات
 - 📦 برنامه از موتور Tesseract همراه (در پوشه `Tesseract`) برای بیشترین قابلیت حمل استفاده می‌کند.
 - 🔒 تمام پردازش‌ها به صورت محلی انجام می‌شود و داده‌ای ارسال نمی‌گردد.
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+Feel free to open an issue or submit a pull request.
+
+---
+
+## ❓ FAQ / Troubleshooting
+
+**Q: Why is the OCR not accurate for some images?**
+- A: OCR accuracy depends on image quality, resolution, and clarity. For best results, use high-resolution, well-lit, and straight images. Avoid blurry or skewed scans.
+
+**Q: How do I add more languages?**
+- A: Download the desired language data file (traineddata) for Tesseract and place it in the `tessdata` folder. Then select the language in the app settings or code.
+
+**Q: What to do if Tesseract is not detected?**
+- A: Make sure the Tesseract executable is included in the app's `Tesseract` folder or installed on your system. Check that the app's settings point to the correct Tesseract path.
 
 ---
 
