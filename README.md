@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Persian OCR App
 
 A modern desktop application for extracting Persian (Farsi) text from images using OCR, built with PySide6 (Qt for Python).
@@ -22,3 +23,6 @@ python main.py
 
 ## License
 MIT 
+=======
+# Persian-OCR-App
+>>>>>>> 7b610f574020b6249b2c002d899e2940f06acdc6
