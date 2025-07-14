@@ -1,0 +1,4 @@
+PySide6
+pytesseract
+pillow
+pdf2image 
