@@ -1,0 +1,24 @@
+# Build output — upload dist\PersianOCR.exe to GitHub Releases, not git
+dist/
+build/
+build_temp/
+build_data/
+
+# Local Python environment
+.build-venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Runtime settings (created next to app / exe)
+settings.json
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+
+# Accidental Tesseract installer (huge, not needed)
+Tesseract/tesseract-ocr-w64-setup-*.exe

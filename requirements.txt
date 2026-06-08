@@ -1,4 +1,7 @@
-PySide6
+flet>=0.85.0
 pytesseract
 pillow
-pdf2image 
+pymupdf
+opencv-python-headless
+python-docx
+windnd
