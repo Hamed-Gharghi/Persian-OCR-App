@@ -5,3 +5,7 @@ pymupdf
 opencv-python-headless
 python-docx
 windnd
+mss
+pynput
+pyautogui
+pyperclip

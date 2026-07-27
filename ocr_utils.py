@@ -152,3 +152,33 @@ def run_ocr(
     if "fas" in lang:
         text = normalize_persian_text(text)
     return text
+
+
+def run_ocr_fast(image, tesseract_path, lang="fas+eng"):
+    """
+    Speed-optimized OCR for the snipping tool workflow.
+
+    Skips upscaling (screenshots are already high-res), uses PSM 6 (single
+    uniform block), and applies only minimal preprocessing for low latency.
+    """
+    import os
+    import pytesseract
+
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
+    os.environ["TESSDATA_PREFIX"] = os.path.join(os.path.dirname(tesseract_path), "tessdata")
+
+    # Minimal preprocessing — no upscaling (screen capture is already crisp)
+    working_image = image.convert("RGB")
+    img = cv2.cvtColor(np.array(working_image), cv2.COLOR_RGB2GRAY)
+    # Light CLAHE for contrast, skip heavy denoising
+    clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(8, 8))
+    img = clahe.apply(img)
+    processed = Image.fromarray(img)
+
+    # PSM 6 = single uniform block of text (ideal for UI captures)
+    config = build_tesseract_config(psm=6, oem=1)
+    text = pytesseract.image_to_string(processed, lang=lang, config=config)
+
+    if "fas" in lang:
+        text = normalize_persian_text(text)
+    return text.strip()

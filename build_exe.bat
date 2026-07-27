@@ -70,7 +70,6 @@ echo Need ~2 GB free on this drive during build.
   --hidden-import docx ^
   --hidden-import windnd ^
   --hidden-import PIL ^
-  --debug-console false ^
   -y
 
 if exist "dist\PersianOCR.exe" (

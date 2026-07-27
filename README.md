@@ -14,9 +14,9 @@
 
 ---
 
-> **Persian OCR App v1.5** — Convert Persian (Farsi) images and PDFs to editable text using Tesseract OCR and Flet. Fast, accurate, and easy-to-use desktop OCR for Persian documents.
+> **Persian OCR App v1.5** — Convert Persian (Farsi) images and PDFs to editable text using Tesseract OCR and Flet. Includes global screen snip (`Win+Shift+D`) that OCRs a region and types the text into the focused app. Fast, accurate, and easy-to-use desktop OCR for Persian documents.
 >
-> **برنامه OCR فارسی نسخه ۱.۵** — تبدیل عکس و PDF فارسی به متن قابل ویرایش با استفاده از Tesseract و Flet. سریع، دقیق و آسان برای اسناد فارسی.
+> **برنامه OCR فارسی نسخه ۱.۵** — تبدیل عکس و PDF فارسی به متن قابل ویرایش با استفاده از Tesseract و Flet. دارای برش صفحه سراسری (`Win+Shift+D`) که ناحیه انتخاب‌شده را OCR می‌کند و متن را در برنامه فعال تایپ می‌کند. سریع، دقیق و آسان برای اسناد فارسی.
 
 ---
 
@@ -61,8 +61,9 @@
 - **Image enhancement** — Upscale, grayscale, contrast, denoise, deskew, optional binarization
 - **Smart layout** — Auto-detect page layout (PSM) or choose manually
 - **Persian text cleanup** — Normalizes common OCR character errors (ي→ی, ك→ک, …)
+- **Screen snip & type** — Press `Win+Shift+D` (or `Ctrl+Shift+D`) anywhere to crop a screen region, run OCR, and auto-type the text into the focused application
 - **Saved settings** — Language, OCR options, and export format persist between sessions
-- **Keyboard shortcuts** — `Ctrl+O` open · `Ctrl+C` copy · `Ctrl+S` save
+- **Keyboard shortcuts** — `Ctrl+O` open · `Ctrl+C` copy · `Ctrl+S` save · `Win+Shift+D` screen snip
 - **Bundled Tesseract 5.5** — No separate installation required
 - **Fully offline** — All processing runs locally; no internet needed
 - **Bilingual UI** — Switch between English and Persian
@@ -142,8 +143,9 @@ Persian OCR (Optical Character Recognition) converts scanned Persian (Farsi) doc
 - 🖼️ پیش‌نمایش تصویر/PDF و پیش‌نمایش تصویر پردازش‌شده قبل از OCR
 - ⚙️ بهبود تصویر، باینری‌سازی، تشخیص خودکار چیدمان صفحه
 - 🎯 حالت سریع یا دقیق برای مدل فارسی
+- ✂️ برش صفحه و تایپ زنده — با `Win+Shift+D` (یا `Ctrl+Shift+D`) بخشی از صفحه را انتخاب کنید؛ متن استخراج و در برنامه فعال تایپ می‌شود
 - 💾 خروجی در فرمت txt، docx و pdf
-- ⌨️ میانبرهای Ctrl+O / Ctrl+C / Ctrl+S
+- ⌨️ میانبرهای Ctrl+O / Ctrl+C / Ctrl+S / Win+Shift+D
 - 💾 ذخیره تنظیمات بین اجراها
 - 📦 Tesseract 5.5 همراه برنامه — بدون نصب جداگانه
 - 🔒 پردازش کاملاً محلی — بدون ارسال داده
@@ -255,17 +257,31 @@ MIT
 
 ---
 
+## 📝 Changelog highlights
+
+### v1.5 — Screen Snip & Type
+- Global hotkey screen crop (`Win+Shift+D` / `Ctrl+Shift+D`): OCR a selected region and type the result into the focused app
+- Windowed standalone `.exe` build (no console flash)
+
+Idea and prototype inspiration for the screen-crop workflow: **[@Meysam-tofiq](https://github.com/Meysam-tofiq)** — thank you!
+
+---
+
 ## 🙏 Thanks / تشکر
 
-This project uses the amazing [Tesseract OCR engine](https://github.com/tesseract-ocr/tesseract) — thank you to the Tesseract team and contributors!
+Special thanks to **[Meysam-tofiq](https://github.com/Meysam-tofiq)** for proposing and prototyping the **screen crop / snip-and-type** idea (`Win+Shift+D`). That contribution helped shape this feature in the main release.
 
-این پروژه از موتور قدرتمند [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) استفاده می‌کند — از تیم و توسعه‌دهندگان Tesseract سپاسگزاریم!
+از **[میثم توفیق (@Meysam-tofiq)](https://github.com/Meysam-tofiq)** بابت پیشنهاد و نمونه‌سازی قابلیت **برش صفحه و تایپ زنده** (`Win+Shift+D`) صمیمانه سپاسگزاریم. این ایده در نسخه اصلی پروژه اضافه شد.
+
+This project also uses the amazing [Tesseract OCR engine](https://github.com/tesseract-ocr/tesseract) — thank you to the Tesseract team and contributors!
+
+این پروژه از موتور قدرتمند [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) نیز استفاده می‌کند — از تیم و توسعه‌دهندگان Tesseract سپاسگزاریم!
 
 ---
 
 ## 🏷️ Keywords | کلیدواژه‌ها
 
-Persian OCR · Farsi OCR · Image to Text · PDF OCR · Tesseract · Flet · PyMuPDF · OpenCV · Persian Text Recognition · فارسی · تشخیص متن فارسی · OCR فارسی · تبدیل عکس به متن · تبدیل PDF به متن
+Persian OCR · Farsi OCR · Image to Text · PDF OCR · Screen Snip · Win+Shift+D · Tesseract · Flet · PyMuPDF · OpenCV · Persian Text Recognition · فارسی · تشخیص متن فارسی · OCR فارسی · تبدیل عکس به متن · تبدیل PDF به متن · برش صفحه
 
 ---
 

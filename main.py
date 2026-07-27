@@ -15,6 +15,8 @@ from ocr_utils import build_tesseract_config, get_psm_reason_label, preprocess_i
 from settings import load_settings, save_settings
 from tessdata_manager import apply_ocr_mode, ensure_model_store, trim_unused_tessdata
 
+import snipping_tool
+
 APP_VERSION = "1.5.0"
 APP_AUTHOR = "Hamed Gharghi"
 APP_GITHUB = "https://github.com/Hamed-Gharghi/Persian-OCR-App"
@@ -246,6 +248,24 @@ class PersianOCRApp:
 
         self._init_controls()
         self._load_saved_settings()
+        # Initialise the snipping tool from saved settings (no UI dependency)
+        _settings = load_settings()
+        snipping_tool.configure(
+            tesseract_path=self.tesseract_path,
+            lang=_settings.get("ocr_lang", "fas+eng"),
+            fast_mode=_settings.get("ocr_mode", "accurate") == "fast",
+            on_start=lambda: [
+                setattr(self.page.window, "minimized", True),
+                self.page.update(),
+            ],
+            on_end=lambda: [
+                setattr(self.page.window, "minimized", False),
+                setattr(self.page.window, "focused", True),
+                self.page.update(),
+            ],
+            on_text_extracted=self._on_text_extracted,
+        )
+        snipping_tool.start_hotkey_listener()
         self._apply_language()
         self._build_layout()
         self._enable_file_drop()
@@ -532,10 +552,22 @@ class PersianOCRApp:
 
     def _on_settings_changed(self, _=None):
         self._persist_settings()
+        # Keep the snipping tool in sync with current OCR settings
+        snipping_tool.configure(
+            tesseract_path=self.tesseract_path,
+            lang=self.lang_dropdown.value or "fas+eng",
+            fast_mode=self.ocr_mode_dropdown.value == "fast",
+        )
 
     def _on_ocr_mode_changed(self, _=None):
         apply_ocr_mode(self.ocr_mode_dropdown.value or "accurate")
         self._persist_settings()
+        # Sync the snipping tool with the current OCR mode
+        snipping_tool.configure(
+            tesseract_path=self.tesseract_path,
+            lang=self.lang_dropdown.value or "fas+eng",
+            fast_mode=self.ocr_mode_dropdown.value == "fast",
+        )
         self._log(
             self.t("ocr_fast") if self.ocr_mode_dropdown.value == "fast" else self.t("ocr_accurate"),
             "info",
@@ -665,13 +697,28 @@ class PersianOCRApp:
         self.github_link.content = ft.Text(self.t("author_link"), size=11, color=COLORS["primary"])
         self.select_file_btn.content = self.t("select_file")
         self.select_folder_btn.content = self.t("select_folder")
-        self.shortcuts_hint.value = self.t("shortcuts")
+        self.shortcuts_hint.value = (
+            f"{self.t('shortcuts')}  ·  "
+            "Win+Shift+D: Screen snip & type"
+            if self.language == "en" else
+            f"{self.t('shortcuts')}  ·  "
+            "Win+Shift+D: برش صفحه و تایپ زنده"
+        )
         self.ocr_mode_dropdown.label = self.t("ocr_mode")
         self.ocr_mode_dropdown.options = [
             ft.DropdownOption(key="accurate", text=self.t("ocr_accurate")),
             ft.DropdownOption(key="fast", text=self.t("ocr_fast")),
         ]
         self.result_field.hint_text = self.t("result_empty")
+
+        # Also re-sync the snipping tool shortcut label shown in status bar
+        self.shortcuts_hint.value = (
+            f"{self.t('shortcuts')}  ·  "
+            "Win+Shift+D: Screen snip & type"
+            if self.language == "en" else
+            f"{self.t('shortcuts')}  ·  "
+            "Win+Shift+D: برش صفحه و تایپ زنده"
+        )
         self._update_result_stats()
         if self.file_path and self.auto_psm_check.value:
             self._suggest_psm_for_file(log=False)
@@ -893,6 +940,19 @@ class PersianOCRApp:
                 self._suggest_psm_for_file()
             self._render_preview()
             self.page.update()
+
+    def _on_text_extracted(self, text, lang):
+        self.result_field.value = text
+        self.result_field.rtl = lang == "fas"
+        self.result_field.text_align = (
+            ft.TextAlign.RIGHT if lang == "fas" else ft.TextAlign.LEFT
+        )
+        self.result_field.update()
+        self._update_result_stats()
+        snack = ft.SnackBar(content=ft.Text("✨ OCR complete! Text typed and loaded into the app."))
+        self.page.snack_bar = snack
+        snack.open = True
+        self.page.update()
 
     def _update_result_stats(self, _=None):
         text = self.result_field.value or ""
