@@ -97,7 +97,9 @@
 
 ## 🖼️ Screenshots | اسکرین‌شات
 
-
+<p align="center">
+  <img src="https://github.com/Hamed-Gharghi/Persian-OCR-App/blob/main/assets/image.png?raw=true" alt="Persian OCR App Screenshot" />
+</p>
 
 ---
 
