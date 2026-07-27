@@ -5,7 +5,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/Hamed-Gharghi/Persian-OCR-App?style=social)](https://github.com/Hamed-Gharghi/Persian-OCR-App/network/members)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-![Version](https://img.shields.io/badge/Version-1.5.0-blue)
+![Version](https://img.shields.io/badge/Version-1.6.0-blue)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
 ![Flet](https://img.shields.io/badge/Flet-0.85%2B-purple)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey?logo=windows&logoColor=white)
@@ -14,9 +14,9 @@
 
 ---
 
-> **Persian OCR App v1.5** — Convert Persian (Farsi) images and PDFs to editable text using Tesseract OCR and Flet. Includes global screen snip (`Win+Shift+D`) that OCRs a region and types the text into the focused app. Fast, accurate, and easy-to-use desktop OCR for Persian documents.
+> **Persian OCR App v1.6** — Convert Persian (Farsi) images and PDFs to editable text using Tesseract OCR and Flet. Includes global screen snip (`Win+Shift+D`) that OCRs a region and types the text into the focused app. Fast, accurate, and easy-to-use desktop OCR for Persian documents.
 >
-> **برنامه OCR فارسی نسخه ۱.۵** — تبدیل عکس و PDF فارسی به متن قابل ویرایش با استفاده از Tesseract و Flet. دارای برش صفحه سراسری (`Win+Shift+D`) که ناحیه انتخاب‌شده را OCR می‌کند و متن را در برنامه فعال تایپ می‌کند. سریع، دقیق و آسان برای اسناد فارسی.
+> **برنامه OCR فارسی نسخه ۱.۶** — تبدیل عکس و PDF فارسی به متن قابل ویرایش با استفاده از Tesseract و Flet. دارای برش صفحه سراسری (`Win+Shift+D`) که ناحیه انتخاب‌شده را OCR می‌کند و متن را در برنامه فعال تایپ می‌کند. سریع، دقیق و آسان برای اسناد فارسی.
 
 ---
 
@@ -259,9 +259,10 @@ MIT
 
 ## 📝 Changelog highlights
 
-### v1.5 — Screen Snip & Type
+### v1.6.0 — Screen Snip & Type
 - Global hotkey screen crop (`Win+Shift+D` / `Ctrl+Shift+D`): OCR a selected region and type the result into the focused app
 - Windowed standalone `.exe` build (no console flash)
+- Lite release packaging option for a slightly smaller download
 
 Idea and prototype inspiration for the screen-crop workflow: **[@Meysam-tofiq](https://github.com/Meysam-tofiq)** — thank you!
 
