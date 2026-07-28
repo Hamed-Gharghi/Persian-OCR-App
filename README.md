@@ -5,7 +5,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/Hamed-Gharghi/Persian-OCR-App?style=social)](https://github.com/Hamed-Gharghi/Persian-OCR-App/network/members)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-![Version](https://img.shields.io/badge/Version-1.6.0-blue)
+![Version](https://img.shields.io/badge/Version-1.7.0-blue)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
 ![Flet](https://img.shields.io/badge/Flet-0.85%2B-purple)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey?logo=windows&logoColor=white)
@@ -14,9 +14,9 @@
 
 ---
 
-> **Persian OCR App v1.6** — Convert Persian (Farsi) images and PDFs to editable text using Tesseract OCR and Flet. Includes global screen snip (`Win+Shift+D`) that OCRs a region and types the text into the focused app. Fast, accurate, and easy-to-use desktop OCR for Persian documents.
+> **Persian OCR App v1.7** — Convert Persian (Farsi) images and PDFs to editable text using **RapidOCR** (ONNX Runtime) and Flet. Includes global screen snip (`Win+Shift+D`) that OCRs a region and types the text into the focused app.
 >
-> **برنامه OCR فارسی نسخه ۱.۶** — تبدیل عکس و PDF فارسی به متن قابل ویرایش با استفاده از Tesseract و Flet. دارای برش صفحه سراسری (`Win+Shift+D`) که ناحیه انتخاب‌شده را OCR می‌کند و متن را در برنامه فعال تایپ می‌کند. سریع، دقیق و آسان برای اسناد فارسی.
+> **برنامه OCR فارسی نسخه ۱.۷** — تبدیل عکس و PDF فارسی به متن قابل ویرایش با **RapidOCR** (ONNX Runtime) و Flet. دارای برش صفحه سراسری (`Win+Shift+D`) که ناحیه انتخاب‌شده را OCR می‌کند و متن را در برنامه فعال تایپ می‌کند.
 
 ---
 
@@ -26,7 +26,9 @@
 
 - Download the latest ready-to-use Windows executable (`PersianOCR.exe`) from the [Releases page](https://github.com/Hamed-Gharghi/Persian-OCR-App/releases).
 - Just download, double-click, and start using Persian OCR on Windows.
-- The `.exe` is fully standalone (~170–190 MB after slim packaging) — Tesseract, language models, and all dependencies are bundled inside.
+- The `.exe` is standalone and much smaller than EasyOCR/PyTorch builds (~target ~200 MB) because OCR runs on **onnxruntime** mobile models.
+- **Users do not install RapidOCR separately.** `build_exe.bat` packs RapidOCR, onnxruntime, and the Arabic/English ONNX weights into the exe for offline use.
+- The build script downloads/copies models into `rapidocr_models\` automatically on first build (needs internet once).
 
 ---
 
@@ -36,7 +38,9 @@
 
 - آخرین نسخه اجرایی ویندوز (`PersianOCR.exe`) را از [صفحه انتشارها](https://github.com/Hamed-Gharghi/Persian-OCR-App/releases) دانلود کنید.
 - فقط دانلود کنید، دوبار کلیک کنید و بلافاصله از برنامه OCR فارسی روی ویندوز استفاده کنید.
-- فایل اجرایی کاملاً مستقل است (~۱۷۰–۱۹۰ مگابایت با بسته‌بندی بهینه) — Tesseract، مدل‌های زبان و تمام وابستگی‌ها داخل آن قرار دارند.
+- فایل اجرایی مستقل است و به‌خاطر RapidOCR/ONNX بسیار سبک‌تر از بیلدهای EasyOCR/PyTorch است.
+- **کاربر نیازی به نصب جداگانه RapidOCR ندارد**؛ کتابخانه و مدل‌های ONNX داخل `.exe` بسته‌بندی می‌شوند.
+- اسکریپت بیلد مدل‌ها را در `rapidocr_models\` آماده می‌کند (اولین بیلد ممکن است نیاز به اینترنت داشته باشد).
 
 ---
 
@@ -52,20 +56,18 @@
 
 ## 🔑 Key Features
 
-- **Persian (Farsi) OCR** — Extract text from Persian images and PDFs
+- **Persian (Farsi) OCR** — Extract text from Persian images and PDFs via [RapidOCR](https://github.com/RapidAI/RapidOCR) (ONNX Runtime)
+- **Fast / Accurate mode** — Smaller vs larger preprocess scale for speed or quality
 - **Modern desktop UI** — Built with [Flet](https://flet.dev/) (v0.85+), dark theme, native RTL for Persian
 - **Easy to use** — Drag-and-drop (Windows), file picker, or batch folder processing
 - **PDF & image support** — PNG, JPG, BMP, and PDF with per-page progress
 - **Export formats** — Plain text (`.txt`), Word (`.docx`), and PDF
-- **OCR quality modes** — Fast (lighter model) or Accurate (best Persian model)
-- **Image enhancement** — Upscale, grayscale, contrast, denoise, deskew, optional binarization
-- **Smart layout** — Auto-detect page layout (PSM) or choose manually
 - **Persian text cleanup** — Normalizes common OCR character errors (ي→ی, ك→ک, …)
 - **Screen snip & type** — Press `Win+Shift+D` (or `Ctrl+Shift+D`) anywhere to crop a screen region, run OCR, and auto-type the text into the focused application
-- **Saved settings** — Language, OCR options, and export format persist between sessions
+- **Saved settings** — Language, speed/accuracy mode, and export format persist between sessions
 - **Keyboard shortcuts** — `Ctrl+O` open · `Ctrl+C` copy · `Ctrl+S` save · `Win+Shift+D` screen snip
-- **Bundled Tesseract 5.5** — No separate installation required
-- **Fully offline** — All processing runs locally; no internet needed
+- **No separate OCR install for end users** — RapidOCR + ONNX models ship inside the exe when you build with `build_exe.bat`
+- **No Tesseract / PyTorch install**
 - **Bilingual UI** — Switch between English and Persian
 
 ---
@@ -140,20 +142,17 @@ Persian OCR (Optical Character Recognition) converts scanned Persian (Farsi) doc
 - 🖥️ رابط کاربری مدرن با Flet (تم تیره، پشتیبانی RTL)
 - 🌐 رابط کاربری فارسی و انگلیسی (قابل تغییر)
 - 📂 کشیدن و رها کردن فایل، انتخاب فایل، یا پردازش دسته‌ای پوشه
-- 🖼️ پیش‌نمایش تصویر/PDF و پیش‌نمایش تصویر پردازش‌شده قبل از OCR
-- ⚙️ بهبود تصویر، باینری‌سازی، تشخیص خودکار چیدمان صفحه
-- 🎯 حالت سریع یا دقیق برای مدل فارسی
+- 🖼️ پیش‌نمایش تصویر/PDF
+- 🧠 موتور RapidOCR (ONNX) برای تشخیص متن فارسی بدون PyTorch
+- ⚡ حالت سریع یا دقیق (مقیاس پیش‌پردازش)
 - ✂️ برش صفحه و تایپ زنده — با `Win+Shift+D` (یا `Ctrl+Shift+D`) بخشی از صفحه را انتخاب کنید؛ متن استخراج و در برنامه فعال تایپ می‌شود
 - 💾 خروجی در فرمت txt، docx و pdf
 - ⌨️ میانبرهای Ctrl+O / Ctrl+C / Ctrl+S / Win+Shift+D
 - 💾 ذخیره تنظیمات بین اجراها
-- 📦 Tesseract 5.5 همراه برنامه — بدون نصب جداگانه
-- 🔒 پردازش کاملاً محلی — بدون ارسال داده
 
 ## 📝 نکات
 
-- 📦 برنامه از موتور Tesseract همراه (در پوشه `Tesseract`) استفاده می‌کند.
-- 🔒 تمام پردازش‌ها به صورت محلی انجام می‌شود و داده‌ای ارسال نمی‌گردد.
+- 🧠 برنامه از **RapidOCR + onnxruntime** استفاده می‌کند (اولین اجرا از سورس ممکن است مدل‌ها را دانلود کند).
 - 📄 فایل `settings.json` کنار برنامه (یا کنار `.exe`) برای ذخیره تنظیمات ساخته می‌شود.
 
 ---
@@ -169,19 +168,15 @@ Feel free to open an issue or submit a pull request.
 
 **Q: Why is the OCR not accurate for some images?**
 
-- OCR accuracy depends on image quality, resolution, and clarity. For best results, use high-resolution, well-lit, and straight images. Try **Accurate** mode, enable **Enhance image**, and use **Auto-detect page layout**.
+- Accuracy still depends on image quality. Prefer high-resolution, well-lit, straight scans. RapidOCR is fast and light; tiny/blurry text can still fail.
 
-**Q: How do I add more languages?**
+**Q: First launch is slow / downloads something?**
 
-- Download the desired Tesseract `traineddata` file and place it in `Tesseract/tessdata/`. Then select the language in the app settings.
-
-**Q: What if Tesseract is not detected?**
-
-- Make sure the `Tesseract` folder (with `tesseract.exe` and `tessdata/`) is next to `main.py` when running from source, or bundled inside `PersianOCR.exe` when using the release build.
+- Release builds bundle ONNX models via `build_exe.bat`. Developers running from source may download models once into the RapidOCR package `models/` folder.
 
 **Q: PDF OCR fails with a Poppler error?**
 
-- Older builds used `pdf2image`, which required Poppler. **v1.5+** uses **PyMuPDF** — no Poppler install is needed. Rebuild with `build_exe.bat` if you still see this error.
+- Older builds used `pdf2image`, which required Poppler. Current builds use **PyMuPDF** — no Poppler install is needed.
 
 **Q: Does drag-and-drop work on Linux or macOS?**
 
@@ -191,63 +186,30 @@ Feel free to open an issue or submit a pull request.
 
 ## 🛠️ Build a single Windows `.exe`
 
-The release build bundles Python, Flet, PyMuPDF, OpenCV, Tesseract, and tessdata into one file. Poppler is **not** needed.
+The release build packs Python, Flet, PyMuPDF, OpenCV, and **RapidOCR/onnxruntime** (no PyTorch). Expect a much smaller executable than EasyOCR builds.
 
-1. Ensure the full `Tesseract` folder is in the project root (`tesseract.exe`, `tessdata/`, `model_store/`).
-2. **Optional:** Delete `Tesseract/tesseract-ocr-w64-setup-*.exe` if present (the Windows installer is not needed and can add tens of MB to the build).
-3. Test from source:
+1. Test from source:
 
    ```bat
    pip install -r requirements.txt
    python main.py
    ```
 
-4. Build the executable:
-
-   **Command Prompt or PowerShell** (note the `.\` prefix in PowerShell):
+2. Build:
 
    ```bat
    .\build_exe.bat
    ```
 
-   Or from PowerShell:
-
-   ```powershell
-   .\build_exe.ps1
-   ```
-
-   `build_exe.bat` runs `prepare_release.py` first to strip training tools, docs, duplicate backups, and unused language packs before packing. Temp files are stored in `build_temp\` on the project drive (not `C:\Users\...\Temp`) to avoid filling system drive C:.
-
-5. Output: `dist\PersianOCR.exe` — share this single file; users do not need Python or Tesseract installed.
-
-### Smaller exe (lite build)
-
-For an even smaller release (~10 MB less), use the lighter English model:
-
-```powershell
-.\build_exe.ps1 -Lite
-```
-
-Or in Command Prompt:
-
-```bat
-set LITE=1
-.\build_exe.bat
-```
-
-Accurate Persian OCR is unchanged; English recognition in mixed documents may be slightly less accurate.
+3. Output: `dist\PersianOCR.exe`
 
 ### Build failed: "No space left on device"
 
-The build needs **~2 GB free** temporarily. If it fails:
+The build needs **several GB free**. If it fails:
 
 1. Run `.\clean_build.bat` to remove old `build\`, `dist\`, and `build_temp\` folders.
 2. Empty Windows temp: press `Win+R`, type `%TEMP%`, delete old files.
-3. Rebuild with `.\build_exe.ps1` or `.\build_exe.bat`.
-
-### Why is the exe still large?
-
-Most of the size comes from **OpenCV**, **PyMuPDF**, **Flet**, and **Tesseract DLLs** (required at runtime). The slim bundle removes training tools, docs, duplicate backups, and extra language packs. Going much smaller would mean dropping features (e.g. image enhancement or bilingual models).
+3. Rebuild with `.\build_exe.bat`.
 
 ---
 
@@ -259,10 +221,11 @@ MIT
 
 ## 📝 Changelog highlights
 
-### v1.6.0 — Screen Snip & Type
-- Global hotkey screen crop (`Win+Shift+D` / `Ctrl+Shift+D`): OCR a selected region and type the result into the focused app
-- Windowed standalone `.exe` build (no console flash)
-- Lite release packaging option for a slightly smaller download
+### v1.7.0 — RapidOCR v5 Quality Upgrade
+- Upgraded Persian OCR to **RapidOCR Arabic PP-OCRv5** for better real-world text quality
+- Kept **Fast / Accurate** modes and tuned preprocessing behavior for each mode
+- Fixed screenshot OCR edge cases (including empty captures) and stabilized progress handling
+- Built lightweight standalone `.exe` with bundled ONNX models for offline use
 
 Idea and prototype inspiration for the screen-crop workflow: **[@Meysam-tofiq](https://github.com/Meysam-tofiq)** — thank you!
 
@@ -274,15 +237,15 @@ Special thanks to **[Meysam-tofiq](https://github.com/Meysam-tofiq)** for propos
 
 از **[میثم توفیق (@Meysam-tofiq)](https://github.com/Meysam-tofiq)** بابت پیشنهاد و نمونه‌سازی قابلیت **برش صفحه و تایپ زنده** (`Win+Shift+D`) صمیمانه سپاسگزاریم. این ایده در نسخه اصلی پروژه اضافه شد.
 
-This project also uses the amazing [Tesseract OCR engine](https://github.com/tesseract-ocr/tesseract) — thank you to the Tesseract team and contributors!
+OCR is powered by [RapidOCR](https://github.com/RapidAI/RapidOCR). Earlier versions used EasyOCR and Tesseract — thanks to those communities.
 
-این پروژه از موتور قدرتمند [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) نیز استفاده می‌کند — از تیم و توسعه‌دهندگان Tesseract سپاسگزاریم!
+موتور OCR فعلی [RapidOCR](https://github.com/RapidAI/RapidOCR) است. نسخه‌های قبلی از EasyOCR و Tesseract استفاده می‌کردند — از جوامع مربوطه سپاسگزاریم.
 
 ---
 
 ## 🏷️ Keywords | کلیدواژه‌ها
 
-Persian OCR · Farsi OCR · Image to Text · PDF OCR · Screen Snip · Win+Shift+D · Tesseract · Flet · PyMuPDF · OpenCV · Persian Text Recognition · فارسی · تشخیص متن فارسی · OCR فارسی · تبدیل عکس به متن · تبدیل PDF به متن · برش صفحه
+Persian OCR · Farsi OCR · Image to Text · PDF OCR · Screen Snip · Win+Shift+D · RapidOCR · ONNX · Flet · PyMuPDF · OpenCV · Persian Text Recognition · فارسی · تشخیص متن فارسی · OCR فارسی · تبدیل عکس به متن · تبدیل PDF به متن · برش صفحه
 
 ---
 

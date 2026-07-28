@@ -5,13 +5,8 @@ import sys
 DEFAULTS = {
     "ui_language": "fa",
     "ocr_lang": "fas+eng",
-    "psm": "3",
-    "preprocess": True,
-    "binarize": False,
-    "auto_psm": True,
-    "show_preprocessed": False,
-    "export_format": "txt",
     "ocr_mode": "accurate",
+    "export_format": "txt",
 }
 
 

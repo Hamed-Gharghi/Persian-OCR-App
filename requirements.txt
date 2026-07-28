@@ -1,5 +1,6 @@
 flet>=0.85.0
-pytesseract
+rapidocr
+onnxruntime
 pillow
 pymupdf
 opencv-python-headless

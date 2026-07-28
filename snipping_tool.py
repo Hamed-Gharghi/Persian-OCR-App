@@ -2,11 +2,8 @@
 Snipping to Live Typing module for Persian OCR App.
 
 Provides a globally accessible screen-snipping overlay triggered via
-Win + Shift + D that captures a screen region, runs fast OCR, and
+Win + Shift + D that captures a screen region, runs OCR, and
 auto-types the extracted Persian text into the focused application.
-
-Uses tkinter for the overlay (built-in, no extra dependency),
-mss for fast screen capture, and pyautogui for text injection.
 """
 
 import threading
@@ -21,47 +18,57 @@ from pynput import keyboard
 
 # ── Module-level configuration (set once from main.py) ──────────────────────
 
-_tesseract_path: str | None = None
 _lang: str = "fas+eng"
-_fast_mode: bool = True
+_mode: str = "accurate"
 _on_start: Callable | None = None
 _on_end: Callable | None = None
 _on_text_extracted: Callable[[str, str], None] | None = None
+_on_ocr_progress: Callable[[float, str], None] | None = None
+_on_ocr_busy: Callable[[bool], None] | None = None
 _lock: Lock = Lock()
 _snipping_active: bool = False
 
 
 def configure(
     *,
-    tesseract_path: str,
     lang: str = "fas+eng",
-    fast_mode: bool = True,
+    mode: str = "accurate",
     on_start: Callable | None = None,
     on_end: Callable | None = None,
     on_text_extracted: Callable[[str, str], None] | None = None,
+    on_ocr_progress: Callable[[float, str], None] | None = None,
+    on_ocr_busy: Callable[[bool], None] | None = None,
+    **_ignored,
 ) -> None:
     """Pass OCR settings from the main app to the snipping tool.
 
     Args:
-        tesseract_path: Path to the Tesseract executable.
         lang: OCR language string (default "fas+eng").
-        fast_mode: Whether to use fast OCR mode.
+        mode: "fast" (lighter preprocess) or "accurate" (more detail for small text).
         on_start: Optional callback invoked just before the snipping overlay
                   appears (e.g. to minimise the main window).
         on_end: Optional callback invoked after snipping completes or is
                 cancelled (e.g. to restore the main window).
-        on_text_extracted: Optional callback invoked after OCR extracts text                           from the snipped region, receiving the text string and
-                           the chosen language code."""
-    global _tesseract_path, _lang, _fast_mode, _on_start, _on_end, _on_text_extracted
-    _tesseract_path = tesseract_path
+        on_text_extracted: Optional callback invoked after OCR extracts text
+                           from the snipped region, receiving the text string and
+                           the chosen language code.
+        on_ocr_progress: Optional callback(fraction, detail) during snip OCR.
+        on_ocr_busy: Optional callback(True/False) when snip OCR starts/ends.
+    """
+    global _lang, _mode, _on_start, _on_end, _on_text_extracted
+    global _on_ocr_progress, _on_ocr_busy
     _lang = lang
-    _fast_mode = fast_mode
+    _mode = mode or "accurate"
     if on_start is not None:
         _on_start = on_start
     if on_end is not None:
         _on_end = on_end
     if on_text_extracted is not None:
         _on_text_extracted = on_text_extracted
+    if on_ocr_progress is not None:
+        _on_ocr_progress = on_ocr_progress
+    if on_ocr_busy is not None:
+        _on_ocr_busy = on_ocr_busy
 
 
 # ── Hotkey listener ────────────────────────────────────────────────────────
@@ -241,24 +248,14 @@ class _SnippingOverlay:
 
 # ── Language picker dialog ─────────────────────────────────────────────────
 
-def _ask_language() -> tuple[str | None, bool]:
-    """Show a small, centered, topmost dialog to pick the OCR language.
-
-    Returns:
-        A tuple ``(language_code, use_accurate_mode)`` where:
-
-        - ``language_code`` is ``"fas"``, ``"eng"``, ``"fas+eng"``, or
-          ``None`` if the user cancels (closes / presses Escape).
-        - ``use_accurate_mode`` is ``True`` if the "High Accuracy" checkbox
-          was ticked, ``False`` otherwise.
-    """
+def _ask_language() -> str | None:
+    """Show a small dialog to pick the OCR language. Returns None if cancelled."""
     root = tk.Tk()
     root.title("Select OCR Language")
     root.attributes("-topmost", True)
     root.configure(bg="#141a22")
 
     result: str | None = None
-    accurate_var = tk.BooleanVar(value=False)
 
     def _pick(value: str) -> None:
         nonlocal result
@@ -273,7 +270,6 @@ def _ask_language() -> tuple[str | None, bool]:
     root.bind("<Escape>", lambda _: _on_close())
     root.protocol("WM_DELETE_WINDOW", _on_close)
 
-    # ── Build UI ───────────────────────────────────────────────────────
     frame = tk.Frame(root, bg="#141a22", padx=20, pady=16)
     frame.pack()
 
@@ -306,34 +302,16 @@ def _ask_language() -> tuple[str | None, bool]:
         )
         btn.pack(fill="x", pady=3)
 
-    # ── High-Accuracy toggle ───────────────────────────────────────────
-    tk.Checkbutton(
-        frame,
-        text="High Accuracy Mode (Slower, better for small/noisy text)",
-        variable=accurate_var,
-        bg="#141a22",
-        fg="#e8edf4",
-        activebackground="#141a22",
-        activeforeground="#e8edf4",
-        selectcolor="#0d1219",
-        font=("Segoe UI", 9),
-        wraplength=260,
-        justify="left",
-    ).pack(pady=(8, 0), anchor="w")
-
-    # ── Centre on screen ────────────────────────────────────────────────
     root.update_idletasks()
     w = root.winfo_width()
     h = root.winfo_height()
     sw = root.winfo_screenwidth()
     sh = root.winfo_screenheight()
-    root.geometry(f"{max(w, 300)}x{max(h, 220)}+{(sw - w) // 2}+{(sh - h) // 2}")
+    root.geometry(f"{max(w, 300)}x{max(h, 180)}+{(sw - w) // 2}+{(sh - h) // 2}")
 
     root.focus_force()
     root.mainloop()
-
-    # If the loop ended without _pick being called, result stays None
-    return result, accurate_var.get()
+    return result
 
 
 # ── Capture, OCR & typing pipeline ─────────────────────────────────────────
@@ -345,53 +323,194 @@ def _capture_region(x1: int, y1: int, x2: int, y2: int) -> Image.Image:
     return Image.frombytes("RGB", raw.size, raw.bgra, "raw", "BGRX")
 
 
-def _ocr_text(
-    image: Image.Image,
-    lang_override: str | None = None,
-    accurate_mode: bool = False,
-) -> str:
-    """Run OCR on the captured image using the app's OCR pipeline.
+def _format_eta(seconds: float | None) -> str:
+    if seconds is None or seconds < 0:
+        return "estimating… / در حال برآورد…"
+    total = int(round(seconds))
+    if total < 60:
+        return f"~{total}s left / حدود {total} ثانیه"
+    minutes, secs = divmod(total, 60)
+    return f"~{minutes}:{secs:02d} left / حدود {minutes}:{secs:02d}"
 
-    Args:
-        image: The PIL image to recognise.
-        lang_override: If provided, use this language instead of the
-                       module-level ``_lang`` variable.
-        accurate_mode: If ``True``, bypass ``_fast_mode`` and run the
-                       standard pipeline with full preprocessing and
-                       ``psm=6`` — ideal for small or noisy text.
-    """
+
+def _stage_label(stage: str) -> str:
+    stage = (stage or "").strip().lower()
+    if stage.startswith("prepare"):
+        return "Preparing… / آماده‌سازی…"
+    if stage.startswith("pass"):
+        parts = stage.replace("pass", "").strip().split("/")
+        try:
+            cur, total = parts[0].strip(), parts[1].strip()
+            return f"Recognizing ({cur}/{total}) / تشخیص ({cur}/{total})"
+        except Exception:
+            return "Recognizing… / در حال تشخیص…"
+    if stage.startswith("merge") or stage.startswith("done"):
+        return "Finishing… / در حال اتمام…"
+    return "Running OCR… / در حال OCR…"
+
+
+class _OcrProgressWindow:
+    """Always-on-top progress UI shown while snip OCR runs."""
+
+    def __init__(self) -> None:
+        self.root = tk.Tk()
+        self.root.title("Persian OCR")
+        self.root.attributes("-topmost", True)
+        self.root.configure(bg="#141a22")
+        self.root.resizable(False, False)
+        self.root.protocol("WM_DELETE_WINDOW", lambda: None)
+
+        self._start = time.time()
+        self._fraction = 0.0
+        self._closed = False
+
+        frame = tk.Frame(self.root, bg="#141a22", padx=22, pady=18)
+        frame.pack()
+
+        tk.Label(
+            frame,
+            text="Screenshot OCR / OCR تصویر",
+            bg="#141a22",
+            fg="#e8edf4",
+            font=("Segoe UI", 12, "bold"),
+        ).pack(anchor="w")
+
+        self.percent_label = tk.Label(
+            frame, text="0%", bg="#141a22", fg="#60a5fa",
+            font=("Segoe UI", 16, "bold"),
+        )
+        self.percent_label.pack(anchor="w", pady=(10, 2))
+
+        self.detail_label = tk.Label(
+            frame,
+            text="Starting… / شروع…",
+            bg="#141a22",
+            fg="#94a3b8",
+            font=("Segoe UI", 10),
+            wraplength=320,
+            justify="left",
+        )
+        self.detail_label.pack(anchor="w")
+
+        self.eta_label = tk.Label(
+            frame,
+            text=_format_eta(None),
+            bg="#141a22",
+            fg="#38bdf8",
+            font=("Segoe UI", 10),
+        )
+        self.eta_label.pack(anchor="w", pady=(4, 10))
+
+        self.canvas = tk.Canvas(
+            frame, width=320, height=12, bg="#0c1118",
+            highlightthickness=0, bd=0,
+        )
+        self.canvas.pack(fill="x")
+        self._bar_bg = self.canvas.create_rectangle(0, 0, 320, 12, fill="#1e293b", outline="")
+        self._bar_fg = self.canvas.create_rectangle(0, 0, 0, 12, fill="#3b82f6", outline="")
+
+        self.root.update_idletasks()
+        w, h = self.root.winfo_width(), self.root.winfo_height()
+        sw, sh = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
+        self.root.geometry(f"{max(w, 360)}x{max(h, 160)}+{(sw - w) // 2}+{(sh - h) // 2}")
+
+    def set_progress(self, fraction: float, stage: str = "") -> None:
+        if self._closed:
+            return
+        fraction = max(0.0, min(1.0, float(fraction)))
+        self._fraction = fraction
+        # Avoid a lingering "Finishing" label — close happens right after OCR returns
+        if (stage or "").strip().lower().startswith("done"):
+            stage = "merge"
+
+        def _apply() -> None:
+            if self._closed:
+                return
+            pct = int(round(fraction * 100))
+            self.percent_label.config(text=f"{pct}%")
+            self.detail_label.config(text=_stage_label(stage))
+            elapsed = time.time() - self._start
+            eta = None
+            if fraction >= 0.999:
+                eta = 0.0
+            elif fraction > 0.08 and elapsed > 0.4:
+                eta = elapsed * (1.0 - fraction) / max(fraction, 0.01)
+            self.eta_label.config(text=_format_eta(eta))
+            self.canvas.coords(self._bar_fg, 0, 0, 320 * fraction, 12)
+            if _on_ocr_progress:
+                try:
+                    _on_ocr_progress(fraction, _stage_label(stage))
+                except Exception:
+                    pass
+
+        try:
+            self.root.after(0, _apply)
+        except Exception:
+            pass
+
+    def finish(self) -> None:
+        self._closed = True
+
+        def _close() -> None:
+            try:
+                self.root.quit()
+            except Exception:
+                pass
+            try:
+                self.root.destroy()
+            except Exception:
+                pass
+
+        try:
+            self.root.after(0, _close)
+            # Nudge the event loop in case quit alone is delayed
+            self.root.after(50, _close)
+        except Exception:
+            _close()
+
+    def run(self) -> None:
+        self.root.focus_force()
+        self.root.mainloop()
+
+
+def _ocr_text(image: Image.Image, lang_override: str | None = None) -> str:
+    """Run OCR on the captured image with a visible progress window."""
+    from ocr_utils import run_ocr
+
     lang = lang_override if lang_override is not None else _lang
+    progress = _OcrProgressWindow()
+    box: dict = {"text": "", "error": None}
 
-    if accurate_mode:
-        # Force high-accuracy pipeline regardless of module-level setting
-        from ocr_utils import build_tesseract_config, run_ocr
+    def work() -> None:
+        try:
+            if _on_ocr_busy:
+                try:
+                    _on_ocr_busy(True)
+                except Exception:
+                    pass
+            progress.set_progress(0.02, "prepare")
+            box["text"] = run_ocr(
+                image,
+                lang=lang,
+                mode=_mode,
+                progress_cb=progress.set_progress,
+            )
+        except Exception as exc:
+            box["error"] = exc
+        finally:
+            # Close progress UI first so it cannot stick on "Finishing"
+            progress.finish()
+            if _on_ocr_busy:
+                try:
+                    _on_ocr_busy(False)
+                except Exception:
+                    pass
 
-        return run_ocr(
-            image,
-            _tesseract_path,
-            lang=lang,
-            tesseract_config=build_tesseract_config(psm=6, oem=1),
-            preprocess=True,
-            binarize=True,
-            auto_psm=False,
-        )
-
-    if _fast_mode:
-        from ocr_utils import run_ocr_fast
-
-        return run_ocr_fast(image, _tesseract_path, lang=lang)
-    else:
-        from ocr_utils import build_tesseract_config, run_ocr
-
-        return run_ocr(
-            image,
-            _tesseract_path,
-            lang=lang,
-            tesseract_config=build_tesseract_config(psm=6, oem=1),
-            preprocess=True,
-            binarize=False,
-            auto_psm=False,
-        )
+    threading.Thread(target=work, daemon=True).start()
+    progress.run()
+    if box["error"] is not None:
+        raise box["error"]
+    return box["text"] or ""
 
 
 def _simulate_typing(text: str) -> None:
@@ -418,22 +537,25 @@ def _simulate_typing(text: str) -> None:
 
 def _run_snipping_workflow() -> None:
     """Full snipping pipeline: overlay → capture → OCR → type."""
-    if not _tesseract_path:
-        return
-
     overlay = _SnippingOverlay()
     coords = overlay.run()
     if coords is None:
         return  # user cancelled
 
-    # Ask the user which language to use for this snip (and mode preference)
-    lang, use_accurate_mode = _ask_language()
+    lang = _ask_language()
     if lang is None:
         return  # user cancelled the language picker
 
+    # Restore main window so its progress bar is visible during OCR
+    if _on_end:
+        try:
+            _on_end()
+        except Exception:
+            pass
+
     try:
         image = _capture_region(*coords)
-        text = _ocr_text(image, lang_override=lang, accurate_mode=use_accurate_mode)
+        text = _ocr_text(image, lang_override=lang)
         if text:
             _simulate_typing(text)
             if _on_text_extracted:
